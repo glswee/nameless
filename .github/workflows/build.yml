@@ -84,7 +84,7 @@ jobs:
           rm -rf "$OUTPUT_PATH"
           mkdir -p "$OUTPUT_PATH"
 
-          for f in bazel-out/applebin_ios-ios_arm*-opt-ST-*/bin/Telegram/Telegram.ipa; do
+          for f in bazel-out/applebin_ios-ios_arm*-opt-ST-*/bin/Telegram/*.ipa; do
             if [ -f "$f" ]; then
               cp "$f" "$OUTPUT_PATH/nameless.ipa"
               echo "Found IPA: $f"
@@ -92,9 +92,9 @@ jobs:
           done
 
           mkdir -p build/DSYMs
-          for f in bazel-out/applebin_ios-ios_arm*-opt-ST-*/bin/Telegram/*.dSYM; do
+          for f in bazel-out/applebin_ios-ios_arm*-opt-ST-*/bin/Telegram/*.dSYM bazel-out/applebin_ios-ios_arm*-opt-ST-*/bin/Telegram/SwiftgramWatchApp_dsyms/*.dSYM; do
             if [ -d "$f" ]; then
-              cp -R "$f" build/DSYMs/
+              cp -R "$f" build/DSYMs/ 2>/dev/null || true
             fi
           done
           if [ -d "build/DSYMs" ] && [ "$(ls -A build/DSYMs)" ]; then
