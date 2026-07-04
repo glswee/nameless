@@ -17,13 +17,6 @@ jobs:
     runs-on: macos-15
 
     steps:
-      - name: Maximize build disk
-        uses: easimon/maximize-build-space@v10
-        with:
-          root-reserve-mb: 4096
-          temp-reserve-mb: 4096
-          swap-size-mb: 8192
-
       - uses: actions/checkout@v4
         with:
           submodules: recursive
