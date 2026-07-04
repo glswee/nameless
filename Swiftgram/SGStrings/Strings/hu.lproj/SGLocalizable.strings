@@ -11,11 +11,11 @@
 /* Do not translate */
 "Settings.Folders.BottomTabStyle.ios" = "iOS";
 /* Do not translate */
-"Settings.Folders.BottomTabStyle.telegram" = "Telegram";
+"Settings.Folders.BottomTabStyle.telegram" = "nameless";
 /* Example: Hide "All Chats" */
 "Settings.Folders.AllChatsHidden" = "Elrejtése \"%@\"";
 "Settings.Folders.RememberLast" = "Utolsó mappa megnyitása";
-"Settings.Folders.RememberLast.Notice" = "A Swiftgram az utoljára használt mappát fogja megnyitni, amikor újraindítja az alkalmazást vagy fiókok között vált.";
+"Settings.Folders.RememberLast.Notice" = "A nameless az utoljára használt mappát fogja megnyitni, amikor újraindítja az alkalmazást vagy fiókok között vált.";
 
 "Settings.Folders.CompactNames" = "Kisebb térköz";
 "Settings.Folders.AllChatsTitle" = "\"Minden Beszélgetés\" cím";
@@ -78,12 +78,12 @@
 "ProxySettings.UseSystemDNS" = "Rendszer DNS használata";
 "ProxySettings.UseSystemDNS.Notice" = "Használja a rendszer DNS-t, ha nem fér hozzá a Google DNS-hez";
 
-/* Preserve markdown asterisks! Example: You **don't** need Telegram Premium! */
+/* Preserve markdown asterisks! Example: You **don't** need nameless Premium! */
 "Common.NoTelegramPremiumNeeded" = "Nem **szükséges** %@!";
 "Common.RestartRequired" = "Újraindítás szükséges";
 "Common.RestartNow" = "Újraindítás most";
-"Common.OpenTelegram" = "Telegram megnyitása";
-"Common.UseTelegramForPremium" = "Kérjük vegye figyelembe, hogy a Telegram Prémiumhoz az hivatalos Telegram appot kell használnia. Amint megkapta a Telegram Prémiumot, Swiftgram összes funkciója elérhető lesz.";
+"Common.OpenTelegram" = "nameless megnyitása";
+"Common.UseTelegramForPremium" = "Kérjük vegye figyelembe, hogy a nameless Prémiumhoz az hivatalos nameless appot kell használnia. Amint megkapta a nameless Prémiumot, nameless összes funkciója elérhető lesz.";
 
 "Message.HoldToShowOrReport" = "Tartsa lenyomva a Megjelenítéshez vagy Jelentéshez.";
 
@@ -97,7 +97,7 @@
 "ContextMenu.SelectFromUser" = "Kiválasztás a Szerzőtől";
 
 "Settings.ContextMenu" = "KONTEXTUS MENÜ";
-"Settings.ContextMenu.Notice" = "A kikapcsolt bejegyzések elérhetők lesznek a 'Swiftgram' almenüjében.";
+"Settings.ContextMenu.Notice" = "A kikapcsolt bejegyzések elérhetők lesznek a 'nameless' almenüjében.";
 
 
 "Settings.ChatSwipeOptions" = "Csevegőlista húzás opciók";
@@ -122,9 +122,9 @@
 /* Date when chat was created. "created: 24 May 2016" */
 "Chat.Created" = "létrehozva: %@";
 
-/* Date when user joined the chat. "Joined Swiftgram Chat" */
+/* Date when user joined the chat. "Joined nameless Chat" */
 "Chat.JoinedDateTitle" = "Csatlakozott %@";
-/* Date when user registered in Telegram. Will be shown like "Registered\n24 May 2016" */
+/* Date when user registered in nameless. Will be shown like "Registered\n24 May 2016" */
 "Chat.RegDate" = "Regisztrált";
 
 "Settings.messageDoubleTapActionOutgoingEdit" = "Dupla koppintás a üzenet szerkesztéséhez";
@@ -138,7 +138,7 @@
 "Settings.hideChannelBottomButton" = "Kanal Alsó Panel Elrejtése";
 
 "Settings.CallConfirmation" = "Hívás megerősítése";
-"Settings.CallConfirmation.Notice" = "A Swiftgram megkéri a megerősítését, mielőtt hívást indítana.";
+"Settings.CallConfirmation.Notice" = "A nameless megkéri a megerősítését, mielőtt hívást indítana.";
 
 /* Confirmation before making a Call */
 "CallConfirmation.Audio.Title" = "Hívást kezdeni?";

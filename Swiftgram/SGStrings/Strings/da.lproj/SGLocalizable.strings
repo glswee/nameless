@@ -11,11 +11,11 @@
 /* Do not translate */
 "Settings.Folders.BottomTabStyle.ios" = "iOS";
 /* Do not translate */
-"Settings.Folders.BottomTabStyle.telegram" = "Telegram";
+"Settings.Folders.BottomTabStyle.telegram" = "nameless";
 /* Example: Hide "All Chats" */
 "Settings.Folders.AllChatsHidden" = "Skjul \"%@\"";
 "Settings.Folders.RememberLast" = "Åbn sidste mappe";
-"Settings.Folders.RememberLast.Notice" = "Swiftgram vil åbne den sidst brugte mappe efter genstart eller konto skift.";
+"Settings.Folders.RememberLast.Notice" = "nameless vil åbne den sidst brugte mappe efter genstart eller konto skift.";
 
 "Settings.Folders.CompactNames" = "Mindre afstand";
 "Settings.Folders.AllChatsTitle" = "\"Alle Chats\" titel";
@@ -78,12 +78,12 @@
 "ProxySettings.UseSystemDNS" = "Brug system DNS";
 "ProxySettings.UseSystemDNS.Notice" = "Brug system DNS for at omgå timeout hvis du ikke har adgang til Google DNS";
 
-/* Preserve markdown asterisks! Example: You **don't** need Telegram Premium! */
+/* Preserve markdown asterisks! Example: You **don't** need nameless Premium! */
 "Common.NoTelegramPremiumNeeded" = "Du **behøver ikke** %@!";
 "Common.RestartRequired" = "Genstart krævet";
 "Common.RestartNow" = "Genstart Nu";
-"Common.OpenTelegram" = "Åben Telegram";
-"Common.UseTelegramForPremium" = "Bemærk venligst, at for at få Telegram Premium skal du bruge den officielle Telegram app. Når du har fået Telegram Premium, vil alle dens funktioner blive tilgængelige i Swiftgram.";
+"Common.OpenTelegram" = "Åben nameless";
+"Common.UseTelegramForPremium" = "Bemærk venligst, at for at få nameless Premium skal du bruge den officielle nameless app. Når du har fået nameless Premium, vil alle dens funktioner blive tilgængelige i nameless.";
 
 "Message.HoldToShowOrReport" = "Hold for at Vise eller Rapportere.";
 
@@ -97,7 +97,7 @@
 "ContextMenu.SelectFromUser" = "Vælg fra Forfatter";
 
 "Settings.ContextMenu" = "KONTEKSTMENU";
-"Settings.ContextMenu.Notice" = "Deaktiverede indgange vil være tilgængelige i \"Swiftgram\" undermenuen.";
+"Settings.ContextMenu.Notice" = "Deaktiverede indgange vil være tilgængelige i \"nameless\" undermenuen.";
 
 
 "Settings.ChatSwipeOptions" = "Chat List Swipe Options";
@@ -122,9 +122,9 @@
 /* Date when chat was created. "created: 24 May 2016" */
 "Chat.Created" = "oprettet: %@";
 
-/* Date when user joined the chat. "Joined Swiftgram Chat" */
+/* Date when user joined the chat. "Joined nameless Chat" */
 "Chat.JoinedDateTitle" = "Tilmeldt %@";
-/* Date when user registered in Telegram. Will be shown like "Registered\n24 May 2016" */
+/* Date when user registered in nameless. Will be shown like "Registered\n24 May 2016" */
 "Chat.RegDate" = "Registreret";
 
 "Settings.messageDoubleTapActionOutgoingEdit" = "Dobbelt tryk for at redigere besked";
@@ -138,7 +138,7 @@
 "Settings.hideChannelBottomButton" = "Skjul Kanal Bund Panel";
 
 "Settings.CallConfirmation" = "Opkaldsbekræftelse";
-"Settings.CallConfirmation.Notice" = "Swiftgram vil bede om din bekræftelse, før der foretages et opkald.";
+"Settings.CallConfirmation.Notice" = "nameless vil bede om din bekræftelse, før der foretages et opkald.";
 
 /* Confirmation before making a Call */
 "CallConfirmation.Audio.Title" = "Foretage et opkald?";

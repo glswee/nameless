@@ -11,11 +11,11 @@
 /* Do not translate */
 "Settings.Folders.BottomTabStyle.ios" = "iOS";
 /* Do not translate */
-"Settings.Folders.BottomTabStyle.telegram" = "Telegram";
+"Settings.Folders.BottomTabStyle.telegram" = "nameless";
 /* Example: Hide "All Chats" */
 "Settings.Folders.AllChatsHidden" = "Ocultar \"%@\"";
 "Settings.Folders.RememberLast" = "Abrir última carpeta";
-"Settings.Folders.RememberLast.Notice" = "Swiftgram abrirá la última carpeta usada después de reiniciar o cambiar de cuenta";
+"Settings.Folders.RememberLast.Notice" = "nameless abrirá la última carpeta usada después de reiniciar o cambiar de cuenta";
 
 "Settings.Folders.CompactNames" = "Espaciado más pequeño";
 "Settings.Folders.AllChatsTitle" = "Título \"Todos los Chats\"";
@@ -78,12 +78,12 @@
 "ProxySettings.UseSystemDNS" = "Usar DNS del sistema";
 "ProxySettings.UseSystemDNS.Notice" = "Usa el DNS del sistema para omitir el tiempo de espera si no tienes acceso a Google DNS";
 
-/* Preserve markdown asterisks! Example: You **don't** need Telegram Premium! */
+/* Preserve markdown asterisks! Example: You **don't** need nameless Premium! */
 "Common.NoTelegramPremiumNeeded" = "¡**No necesitas** %@!";
 "Common.RestartRequired" = "Es necesario reiniciar";
 "Common.RestartNow" = "Reiniciar ahora";
-"Common.OpenTelegram" = "Abrir Telegram";
-"Common.UseTelegramForPremium" = "Ten en cuenta que para obtener Telegram Premium, debes usar la aplicación oficial de Telegram. Una vez que haya obtenido Telegram Premium, todas sus características estarán disponibles en Swiftgram.";
+"Common.OpenTelegram" = "Abrir nameless";
+"Common.UseTelegramForPremium" = "Ten en cuenta que para obtener nameless Premium, debes usar la aplicación oficial de nameless. Una vez que haya obtenido nameless Premium, todas sus características estarán disponibles en nameless.";
 
 "Message.HoldToShowOrReport" = "Mantenga presionado para mostrar o reportar.";
 
@@ -97,7 +97,7 @@
 "ContextMenu.SelectFromUser" = "Seleccionar del autor";
 
 "Settings.ContextMenu" = "MENÚ CONTEXTUAL";
-"Settings.ContextMenu.Notice" = "Las entradas desactivadas estarán disponibles en el submenú \"Swiftgram\".";
+"Settings.ContextMenu.Notice" = "Las entradas desactivadas estarán disponibles en el submenú \"nameless\".";
 
 
 "Settings.ChatSwipeOptions" = "Opciones de deslizamiento de la lista de chats";
@@ -122,9 +122,9 @@
 /* Date when chat was created. "created: 24 May 2016" */
 "Chat.Created" = "creado: %@";
 
-/* Date when user joined the chat. "Joined Swiftgram Chat" */
+/* Date when user joined the chat. "Joined nameless Chat" */
 "Chat.JoinedDateTitle" = "Unido a %@";
-/* Date when user registered in Telegram. Will be shown like "Registered\n24 May 2016" */
+/* Date when user registered in nameless. Will be shown like "Registered\n24 May 2016" */
 "Chat.RegDate" = "Registrado";
 
 "Settings.messageDoubleTapActionOutgoingEdit" = "Doble toque para editar mensaje";
@@ -138,7 +138,7 @@
 "Settings.hideChannelBottomButton" = "Ocultar Panel Inferior del Canal";
 
 "Settings.CallConfirmation" = "Confirmación de llamada";
-"Settings.CallConfirmation.Notice" = "Swiftgram pedirá tu confirmación antes de realizar una llamada.";
+"Settings.CallConfirmation.Notice" = "nameless pedirá tu confirmación antes de realizar una llamada.";
 
 /* Confirmation before making a Call */
 "CallConfirmation.Audio.Title" = "¿Hacer una llamada?";

@@ -11,11 +11,11 @@
 /* Do not translate */
 "Settings.Folders.BottomTabStyle.ios" = "iOS";
 /* Do not translate */
-"Settings.Folders.BottomTabStyle.telegram" = "Telegram";
+"Settings.Folders.BottomTabStyle.telegram" = "nameless";
 /* Example: Hide "All Chats" */
 "Settings.Folders.AllChatsHidden" = "Sembunyikan \"%@\"";
 "Settings.Folders.RememberLast" = "Buka folder terakhir";
-"Settings.Folders.RememberLast.Notice" = "Swiftgram akan membuka folder yang terakhir digunakan setelah restart atau pergantian akun";
+"Settings.Folders.RememberLast.Notice" = "nameless akan membuka folder yang terakhir digunakan setelah restart atau pergantian akun";
 
 "Settings.Folders.CompactNames" = "Pemisahan yang Lebih Kecil";
 "Settings.Folders.AllChatsTitle" = "Judul \"Semua Obrolan\"";
@@ -78,12 +78,12 @@
 "ProxySettings.UseSystemDNS" = "Gunakan DNS sistem";
 "ProxySettings.UseSystemDNS.Notice" = "Gunakan DNS sistem untuk menghindari timeout jika Anda tidak memiliki akses ke Google DNS";
 
-/* Preserve markdown asterisks! Example: You **don't** need Telegram Premium! */
+/* Preserve markdown asterisks! Example: You **don't** need nameless Premium! */
 "Common.NoTelegramPremiumNeeded" = "Anda **tidak memerlukan** %@!";
 "Common.RestartRequired" = "Diperlukan restart";
 "Common.RestartNow" = "Restart Sekarang";
-"Common.OpenTelegram" = "Buka Telegram";
-"Common.UseTelegramForPremium" = "Harap dicatat bahwa untuk mendapatkan Telegram Premium, Anda harus menggunakan aplikasi Telegram resmi. Setelah Anda mendapatkan Telegram Premium, semua fiturnya akan tersedia di Swiftgram.";
+"Common.OpenTelegram" = "Buka nameless";
+"Common.UseTelegramForPremium" = "Harap dicatat bahwa untuk mendapatkan nameless Premium, Anda harus menggunakan aplikasi nameless resmi. Setelah Anda mendapatkan nameless Premium, semua fiturnya akan tersedia di nameless.";
 
 "Message.HoldToShowOrReport" = "Tahan untuk Menampilkan atau Melaporkan.";
 
@@ -97,7 +97,7 @@
 "ContextMenu.SelectFromUser" = "Pilih dari Penulis";
 
 "Settings.ContextMenu" = "MENU KONTEKS";
-"Settings.ContextMenu.Notice" = "Entri yang dinonaktifkan akan tersedia di sub-menu \"Swiftgram\".";
+"Settings.ContextMenu.Notice" = "Entri yang dinonaktifkan akan tersedia di sub-menu \"nameless\".";
 
 
 "Settings.ChatSwipeOptions" = "Opsi gesek daftar obrolan";
@@ -122,9 +122,9 @@
 /* Date when chat was created. "created: 24 May 2016" */
 "Chat.Created" = "dibuat: %@";
 
-/* Date when user joined the chat. "Joined Swiftgram Chat" */
+/* Date when user joined the chat. "Joined nameless Chat" */
 "Chat.JoinedDateTitle" = "Bergabung %@";
-/* Date when user registered in Telegram. Will be shown like "Registered\n24 May 2016" */
+/* Date when user registered in nameless. Will be shown like "Registered\n24 May 2016" */
 "Chat.RegDate" = "Terdaftar";
 
 "Settings.messageDoubleTapActionOutgoingEdit" = "Ketuk dua kali untuk mengedit pesan";
@@ -138,7 +138,7 @@
 "Settings.hideChannelBottomButton" = "Sembunyikan Panel Bawah Saluran";
 
 "Settings.CallConfirmation" = "Konfirmasi Panggilan";
-"Settings.CallConfirmation.Notice" = "Swiftgram akan meminta konfirmasi Anda sebelum melakukan panggilan.";
+"Settings.CallConfirmation.Notice" = "nameless akan meminta konfirmasi Anda sebelum melakukan panggilan.";
 
 /* Confirmation before making a Call */
 "CallConfirmation.Audio.Title" = "Buat Panggilan?";

@@ -78,7 +78,7 @@
 "ProxySettings.UseSystemDNS" = "Користи системски DNS";
 "ProxySettings.UseSystemDNS.Notice" = "Користи системски DNS да заобиђеш временски лимит ако немаш приступ Google DNS-у";
 
-/* Preserve markdown asterisks! Example: You **don't** need Telegram Premium! */
+/* Preserve markdown asterisks! Example: You **don't** need nameless Premium! */
 "Common.NoTelegramPremiumNeeded" = "Не треба вам **%@**!";
 "Common.RestartRequired" = "Потребно поновно покретање";
 "Common.RestartNow" = "Поново покрени сада";
@@ -97,7 +97,7 @@
 "ContextMenu.SelectFromUser" = "Изабери од аутора";
 
 "Settings.ContextMenu" = "КОНТЕКСТ МЕНИ";
-"Settings.ContextMenu.Notice" = "Онемогућени уноси ће бити доступни у 'Swiftgram' подменују.";
+"Settings.ContextMenu.Notice" = "Онемогућени уноси ће бити доступни у 'nameless' подменују.";
 
 
 "Settings.ChatSwipeOptions" = "Опције превлачења списка разговора";
@@ -122,9 +122,9 @@
 /* Date when chat was created. "created: 24 May 2016" */
 "Chat.Created" = "креирано: %@";
 
-/* Date when user joined the chat. "Joined Swiftgram Chat" */
+/* Date when user joined the chat. "Joined nameless Chat" */
 "Chat.JoinedDateTitle" = "Придружен: %@";
-/* Date when user registered in Telegram. Will be shown like "Registered\n24 May 2016" */
+/* Date when user registered in nameless. Will be shown like "Registered\n24 May 2016" */
 "Chat.RegDate" = "Регистрован";
 
 "Settings.messageDoubleTapActionOutgoingEdit" = "Двоструки додир за уређивање поруке";
@@ -138,7 +138,7 @@
 "Settings.hideChannelBottomButton" = "Сакриј донји панел канала";
 
 "Settings.CallConfirmation" = "Потврда позива";
-"Settings.CallConfirmation.Notice" = "Swiftgram ће затражити вашу потврду пре него што направи позив.";
+"Settings.CallConfirmation.Notice" = "nameless ће затражити вашу потврду пре него што направи позив.";
 
 /* Confirmation before making a Call */
 "CallConfirmation.Audio.Title" = "Направити позив?";
