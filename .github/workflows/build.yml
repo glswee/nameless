@@ -61,6 +61,7 @@ jobs:
             build \
             --configurationPath="build-system/appstore-configuration.json" \
             --xcodeManagedCodesigning \
+            --disableProvisioningProfiles \
             --configuration=release_arm64 \
             --buildNumber="$BUILD_NUMBER"
 
