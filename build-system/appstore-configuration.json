@@ -1,4 +1,5 @@
 {
+	"sg_config": "{\"apiUrl\":\"\",\"webappUrl\":\"\",\"botUsername\":\"\",\"publicKey\":null,\"iaps\":[]}",
 	"bundle_id": "app.nameless.messenger",
 	"api_id": "31498805",
 	"api_hash": "929ea1b8a71d19f27f21b8be686510e6",
