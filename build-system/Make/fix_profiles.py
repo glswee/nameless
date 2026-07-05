@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fix provisioning profiles: add missing Platform key, inject needed entitlements, re-sign."""
+"""Fix provisioning profiles: add missing keys, inject entitlements and certificates, re-sign."""
 import plistlib
 import subprocess
 import uuid
@@ -31,15 +31,39 @@ PROFILE_BUNDLE_MAP = {
     'WatchExtension': BUNDLE_ID + '.watchkitapp.extension',
 }
 
-# Extract cert and key from p12
+# Read the developer certificate (DER format)
+cert_der_path = os.path.join(CERTS_DIR, 'Public.cer')
+with open(cert_der_path, 'rb') as f:
+    dev_cert_data = f.read()
+print(f"Loaded developer certificate: {len(dev_cert_data)} bytes")
+
+# Extract cert and key for re-signing (use Public.cer + generate a temp key)
+# Since p12 uses RC2 which may not be available, use the Public.cer directly
+# and create a signing key from it
 subprocess.run([
-    'openssl', 'pkcs12', '-in', os.path.join(CERTS_DIR, 'SelfSigned.p12'),
-    '-passin', 'pass:', '-nokeys', '-out', '/tmp/cert.pem'
+    'openssl', 'x509', '-in', cert_der_path, '-inform', 'DER',
+    '-out', '/tmp/cert.pem', '-outform', 'PEM'
 ], capture_output=True, check=True)
-subprocess.run([
+
+# Generate a key pair for signing if we can't extract from p12
+# Try extracting from p12 first
+r = subprocess.run([
     'openssl', 'pkcs12', '-in', os.path.join(CERTS_DIR, 'SelfSigned.p12'),
     '-passin', 'pass:', '-nocerts', '-nodes', '-out', '/tmp/key.pem'
-], capture_output=True, check=True)
+], capture_output=True)
+if r.returncode != 0:
+    # p12 extraction failed, generate a new key
+    print("p12 key extraction failed, generating new key...")
+    subprocess.run([
+        'openssl', 'genrsa', '-out', '/tmp/key.pem', '2048'
+    ], capture_output=True, check=True)
+    # Re-create a self-signed cert that matches
+    subprocess.run([
+        'openssl', 'req', '-new', '-x509', '-key', '/tmp/key.pem',
+        '-out', '/tmp/cert.pem', '-days', '3650',
+        '-subj', '/CN=Fake Developer/O=Fake Team/C=US'
+    ], capture_output=True, check=True)
+    print("Generated new self-signed cert+key")
 
 for fname in sorted(os.listdir(PROFILES_DIR)):
     if not fname.endswith('.mobileprovision'):
@@ -68,11 +92,14 @@ for fname in sorted(os.listdir(PROFILES_DIR)):
     if not isinstance(exp, datetime.datetime):
         d['ExpirationDate'] = datetime.datetime(2099, 12, 31, 23, 59, 59)
 
+    # Add DeveloperCertificates (required by codesigningtool)
+    d['DeveloperCertificates'] = [dev_cert_data]
+
     # Build entitlements
     ent = d.get('Entitlements', {})
 
     # Determine this profile's bundle ID
-    ext_bundle = BUNDLE_ID  # default
+    ext_bundle = BUNDLE_ID
     for key, bid in PROFILE_BUNDLE_MAP.items():
         if key in fname:
             ext_bundle = bid
@@ -82,8 +109,6 @@ for fname in sorted(os.listdir(PROFILES_DIR)):
     ent['keychain-access-groups'] = [TEAM_ID + '.' + BUNDLE_ID]
     ent['aps-environment'] = 'development'
     ent['get-task-allow'] = True
-
-    # Add application-groups for main app and extensions that need it
     ent['com.apple.security.application-groups'] = ['group.' + BUNDLE_ID]
 
     d['Entitlements'] = ent
