@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
-"""Fix provisioning profiles and debug date handling."""
+"""Fix provisioning profiles: add missing Platform key and re-sign with openssl."""
 import plistlib
 import subprocess
 import uuid
 import os
 import datetime
 
-CERTS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-                          'fake-codesigning', 'certs')
-PROFILES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-                            'fake-codesigning', 'profiles')
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CERTS_DIR = os.path.join(BASE_DIR, 'fake-codesigning', 'certs')
+PROFILES_DIR = os.path.join(BASE_DIR, 'fake-codesigning', 'profiles')
 
-# Extract cert and key
+# Extract cert and key from p12
 subprocess.run([
     'openssl', 'pkcs12', '-in', os.path.join(CERTS_DIR, 'SelfSigned.p12'),
     '-passin', 'pass:', '-nokeys', '-out', '/tmp/cert.pem'
@@ -42,11 +41,8 @@ for fname in sorted(os.listdir(PROFILES_DIR)):
     d.setdefault('UUID', str(uuid.uuid4()).upper())
     d.setdefault('Version', 1)
 
-    # DEBUG: Check date type
+    # Ensure ExpirationDate is a datetime
     exp = d.get('ExpirationDate')
-    print(fname + ': ExpirationDate type=' + str(type(exp).__name__) + ' val=' + str(exp)[:30])
-
-    # Ensure ExpirationDate is a datetime (set far future if needed)
     if not isinstance(exp, datetime.datetime):
         d['ExpirationDate'] = datetime.datetime(2099, 12, 31, 23, 59, 59)
 
