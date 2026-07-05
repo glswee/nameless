@@ -1,13 +1,26 @@
 #!/usr/bin/env python3
-"""Fix provisioning profiles: add missing keys. No re-signing needed - 
-the provisioning_profile_tool reads XML plists directly (back door)."""
+"""Fix provisioning profiles: add missing keys and re-sign with openssl."""
 import plistlib
 import subprocess
 import uuid
 import os
 
+CERTS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                          'fake-codesigning', 'certs')
 PROFILES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                             'fake-codesigning', 'profiles')
+
+# Extract cert and key from p12
+subprocess.run([
+    'openssl', 'pkcs12', '-in',
+    os.path.join(CERTS_DIR, 'SelfSigned.p12'),
+    '-passin', 'pass:', '-nokeys', '-out', '/tmp/cert.pem'
+], capture_output=True, check=True)
+subprocess.run([
+    'openssl', 'pkcs12', '-in',
+    os.path.join(CERTS_DIR, 'SelfSigned.p12'),
+    '-passin', 'pass:', '-nocerts', '-nodes', '-out', '/tmp/key.pem'
+], capture_output=True, check=True)
 
 for fname in sorted(os.listdir(PROFILES_DIR)):
     if not fname.endswith('.mobileprovision'):
@@ -33,11 +46,24 @@ for fname in sorted(os.listdir(PROFILES_DIR)):
     d.setdefault('UUID', str(uuid.uuid4()).upper())
     d.setdefault('Version', 1)
 
-    # Write as XML plist directly (no CMS re-signing needed)
-    # The provisioning_profile_tool reads XML plists via backdoor path
-    with open(path, 'wb') as f:
+    # Write modified plist as XML and re-sign as CMS
+    tmp = '/tmp/_profile_tmp.plist'
+    with open(tmp, 'wb') as f:
         plistlib.dump(d, f, fmt=plistlib.FMT_XML)
 
-    print(f'Fixed {fname} -> Platform={platform}')
+    r2 = subprocess.run([
+        'openssl', 'smime', '-sign', '-in', tmp, '-outform', 'DER',
+        '-out', path, '-signer', '/tmp/cert.pem',
+        '-inkey', '/tmp/key.pem', '-nodetach'
+    ], capture_output=True)
 
-print(f'Done. Fixed {len([f for f in os.listdir(PROFILES_DIR) if f.endswith(".mobileprovision")])} profiles.')
+    if r2.returncode != 0:
+        print(f'SKIP {fname}: smime sign failed: {r2.stderr.decode()[:100]}')
+    else:
+        print(f'Fixed {fname} -> Platform={platform}')
+
+    os.unlink(tmp)
+
+os.unlink('/tmp/cert.pem')
+os.unlink('/tmp/key.pem')
+print('Done.')
