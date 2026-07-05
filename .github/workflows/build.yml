@@ -63,7 +63,6 @@ jobs:
           # Step 2: Extract cert/key and fix provisioning profiles
           CERTS_DIR="build-system/fake-codesigning/certs"
           PROFILES_DIR="build-system/fake-codesigning/profiles"
-          # Extract PEM cert and key from p12 for openssl signing
           openssl pkcs12 -in "$CERTS_DIR/SelfSigned.p12" -passin pass: -nokeys -out /tmp/cert.pem
           openssl pkcs12 -in "$CERTS_DIR/SelfSigned.p12" -passin pass: -nocerts -nodes -out /tmp/key.pem
           for profile in "$PROFILES_DIR"/*.mobileprovision; do
@@ -75,13 +74,13 @@ jobs:
             else
               PLATFORM="IOS"
             fi
-            if ! plutil -extract Platform raw "$tmp_plist" 2>/dev/null; then
-              plutil -insert Platform -string "$PLATFORM" "$tmp_plist"
-              openssl smime -sign -in "$tmp_plist" -outform DER -out "$profile" -signer /tmp/cert.pem -inkey /tmp/key.pem -nodetach
-              echo "Fixed $name -> Platform=$PLATFORM"
-            else
-              echo "$name already has Platform key"
-            fi
+            # Add all missing keys required by rules_apple provisioning_profile_tool
+            plutil -insert Platform -string "$PLATFORM" "$tmp_plist" 2>/dev/null || true
+            plutil -insert TimeToLive -integer 31536000 "$tmp_plist" 2>/dev/null || true
+            plutil -insert UUID -string "$(uuidgen)" "$tmp_plist" 2>/dev/null || true
+            plutil -insert Version -integer 1 "$tmp_plist" 2>/dev/null || true
+            openssl smime -sign -in "$tmp_plist" -outform DER -out "$profile" -signer /tmp/cert.pem -inkey /tmp/key.pem -nodetach
+            echo "Fixed $name -> Platform=$PLATFORM"
             rm "$tmp_plist"
           done
           rm -f /tmp/cert.pem /tmp/key.pem
