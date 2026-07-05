@@ -64,7 +64,7 @@ jobs:
           PROFILES_DIR="build-system/fake-codesigning/profiles"
           # Extract PEM cert and key from p12 for openssl signing
           openssl pkcs12 -in "$CERTS_DIR/SelfSigned.p12" -passin pass: -nokeys -out /tmp/cert.pem
-          openssl pkcs12 -in "$CERTS_DIR/SelfSigned.p12" -passin pass: -nocerts -out /tmp/key.pem
+          openssl pkcs12 -in "$CERTS_DIR/SelfSigned.p12" -passin pass: -nocerts -nodes -out /tmp/key.pem
           for profile in "$PROFILES_DIR"/*.mobileprovision; do
             name=$(basename "$profile" .mobileprovision)
             tmp_plist=$(mktemp)
