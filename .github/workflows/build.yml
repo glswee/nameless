@@ -60,41 +60,10 @@ jobs:
           # Step 1: Import certificates into keychain
           python3 build-system/Make/ImportCertificates.py --path build-system/fake-codesigning/certs
 
-          # Step 2: Fix provisioning profiles with proper date handling
-          CERTS_DIR="build-system/fake-codesigning/certs"
-          PROFILES_DIR="build-system/fake-codesigning/profiles"
-          openssl pkcs12 -in "$CERTS_DIR/SelfSigned.p12" -passin pass: -nokeys -out /tmp/cert.pem
-          openssl pkcs12 -in "$CERTS_DIR/SelfSigned.p12" -passin pass: -nocerts -nodes -out /tmp/key.pem
-          python3 -c "
-          import plistlib, subprocess, uuid, os
-          certs_dir = 'build-system/fake-codesigning/profiles'
-          for fname in sorted(os.listdir(certs_dir)):
-            if not fname.endswith('.mobileprovision'):
-              continue
-            path = os.path.join(certs_dir, fname)
-            # Decode profile
-            r = subprocess.run(['security', 'cms', '-D', '-i', path], capture_output=True)
-            d = plistlib.loads(r.stdout)
-            # Add missing keys preserving date types
-            if 'Watch' in fname or 'watch' in fname:
-              d['Platform'] = 'WATCH_OS'
-            else:
-              d['Platform'] = 'IOS'
-            d.setdefault('TimeToLive', 31536000)
-            d.setdefault('UUID', str(uuid.uuid4()).upper())
-            d.setdefault('Version', 1)
-            # Write modified plist and re-sign
-            tmp = '/tmp/_profile_tmp.plist'
-            with open(tmp, 'wb') as f:
-              plistlib.dump(d, f, fmt=plistlib.FMT_XML)
-            subprocess.run([
-              'openssl', 'smime', '-sign', '-in', tmp, '-outform', 'DER',
-              '-out', path, '-signer', '/tmp/cert.pem',
-              '-inkey', '/tmp/key.pem', '-nodetach'
-            ], check=True, capture_output=True)
-            print(f'Fixed {fname} -> Platform={d["Platform"]}')
-            os.unlink(tmp)
-          "
+          # Step 2: Fix provisioning profiles
+          openssl pkcs12 -in build-system/fake-codesigning/certs/SelfSigned.p12 -passin pass: -nokeys -out /tmp/cert.pem
+          openssl pkcs12 -in build-system/fake-codesigning/certs/SelfSigned.p12 -passin pass: -nocerts -nodes -out /tmp/key.pem
+          python3 build-system/Make/fix_profiles.py
           rm -f /tmp/cert.pem /tmp/key.pem
 
           # Step 3: Build
