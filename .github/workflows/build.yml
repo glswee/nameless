@@ -47,6 +47,7 @@ jobs:
       - name: Build
         run: |
           set -x
+          set -o pipefail
           SOURCE_DIR=/Users/Shared/telegram-ios
           BAZEL_USER_ROOT="/private/var/tmp/_bazel_runner"
           cd "$SOURCE_DIR"
@@ -59,8 +60,6 @@ jobs:
           python3 build-system/Make/ImportCertificates.py --path build-system/fake-codesigning/certs
 
           # Step 2: Fix provisioning profiles - add missing Platform key
-          IDENTITY=$(security find-identity -v -p codesigning temp.keychain 2>/dev/null | head -1 | awk -F'"' '{print $2}')
-          echo "Using identity: $IDENTITY"
           PROFILES_DIR="build-system/fake-codesigning/profiles"
           for profile in "$PROFILES_DIR"/*.mobileprovision; do
             name=$(basename "$profile" .mobileprovision)
@@ -73,7 +72,7 @@ jobs:
             fi
             if ! plutil -extract Platform raw "$tmp_plist" 2>/dev/null; then
               plutil -insert Platform -string "$PLATFORM" "$tmp_plist"
-              security cms -S -k temp.keychain -N "$IDENTITY" -i "$tmp_plist" -o "$profile"
+              security cms -S -k temp.keychain -i "$tmp_plist" -o "$profile"
               echo "Fixed $name -> Platform=$PLATFORM"
             else
               echo "$name already has Platform key"
@@ -103,6 +102,7 @@ jobs:
       - name: Collect artifacts
         run: |
           set -x
+          set -o pipefail
           SOURCE_DIR=/Users/Shared/telegram-ios
           cd "$SOURCE_DIR"
           OUTPUT_PATH="build/artifacts"
