@@ -60,11 +60,8 @@ jobs:
           # Step 1: Import certificates into keychain
           python3 build-system/Make/ImportCertificates.py --path build-system/fake-codesigning/certs
 
-          # Step 2: Fix provisioning profiles
-          openssl pkcs12 -in build-system/fake-codesigning/certs/SelfSigned.p12 -passin pass: -nokeys -out /tmp/cert.pem
-          openssl pkcs12 -in build-system/fake-codesigning/certs/SelfSigned.p12 -passin pass: -nocerts -nodes -out /tmp/key.pem
+          # Step 2: Fix provisioning profiles (no re-signing needed)
           python3 build-system/Make/fix_profiles.py
-          rm -f /tmp/cert.pem /tmp/key.pem
 
           # Step 3: Clean Bazel cache and build
           rm -rf /private/var/tmp/_bazel_runner 2>/dev/null || true
