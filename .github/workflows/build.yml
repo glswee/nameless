@@ -44,16 +44,37 @@ jobs:
           cp -R "$GITHUB_WORKSPACE" /Users/Shared/
           mv /Users/Shared/$(basename "$GITHUB_WORKSPACE") /Users/Shared/telegram-ios
 
+      - name: Fix provisioning profiles
+        run: |
+          SOURCE_DIR=/Users/Shared/telegram-ios
+          PROFILES_DIR="$SOURCE_DIR/build-system/fake-codesigning/profiles"
+          KEYCHAIN="temp.keychain"
+          for profile in "$PROFILES_DIR"/*.mobileprovision; do
+            name=$(basename "$profile" .mobileprovision)
+            tmp_plist=$(mktemp)
+            security cms -D -i "$profile" > "$tmp_plist"
+            if echo "$name" | grep -qi watch; then
+              PLATFORM="WATCH_OS"
+            else
+              PLATFORM="IOS"
+            fi
+            if ! plutil -extract Platform raw "$tmp_plist" 2>/dev/null; then
+              plutil -insert Platform -string "$PLATFORM" "$tmp_plist"
+            fi
+            security cms -S -k "$KEYCHAIN" -N "Telegram" -i "$tmp_plist" -o "$profile"
+            rm "$tmp_plist"
+            echo "Fixed $name -> Platform=$PLATFORM"
+          done
+
       - name: Build
         run: |
           set -x
           SOURCE_DIR=/Users/Shared/telegram-ios
           BAZEL_USER_ROOT="/private/var/tmp/_bazel_runner"
           cd "$SOURCE_DIR"
-
           export BUILD_NUMBER="${{ github.run_number }}"
           export APP_VERSION=$(cat versions.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print(obj["app"]);')
-
+          export XCODE_VERSION_OVERRIDE="26.2.0"
           python3 build-system/Make/ImportCertificates.py --path build-system/fake-codesigning/certs
           python3 -u build-system/Make/Make.py \
             --bazelUserRoot="$BAZEL_USER_ROOT" \
@@ -62,7 +83,7 @@ jobs:
             --codesigningInformationPath=build-system/fake-codesigning \
             --configuration=release_arm64 \
             --buildNumber="$BUILD_NUMBER" \
-            2>&1 | tee /tmp/build.log || true
+          2>&1 | tee /tmp/build.log
           echo "=== LAST 100 LINES ===" && tail -100 /tmp/build.log
 
       - name: Upload build log
@@ -81,14 +102,12 @@ jobs:
           OUTPUT_PATH="build/artifacts"
           rm -rf "$OUTPUT_PATH"
           mkdir -p "$OUTPUT_PATH"
-
           for f in bazel-out/applebin_ios-ios_arm*-opt-ST-*/bin/Telegram/*.ipa; do
             if [ -f "$f" ]; then
               cp "$f" "$OUTPUT_PATH/nameless.ipa"
               echo "Found IPA: $f"
             fi
           done
-
           mkdir -p build/DSYMs
           for f in bazel-out/applebin_ios-ios_arm*-opt-ST-*/bin/Telegram/*.dSYM bazel-out/applebin_ios-ios_arm*-opt-ST-*/bin/Telegram/SwiftgramWatchApp_dsyms/*.dSYM; do
             if [ -d "$f" ]; then
@@ -98,7 +117,6 @@ jobs:
           if [ -d "build/DSYMs" ] && [ "$(ls -A build/DSYMs)" ]; then
             zip -r "./$OUTPUT_PATH/nameless.DSYMs.zip" build/DSYMs
           fi
-
           ls -lah "$OUTPUT_PATH/" || echo "No artifacts found"
 
       - name: Upload IPA
