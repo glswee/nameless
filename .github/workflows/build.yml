@@ -63,8 +63,8 @@ jobs:
           CERTS_DIR="build-system/fake-codesigning/certs"
           PROFILES_DIR="build-system/fake-codesigning/profiles"
           # Extract PEM cert and key from p12 for openssl signing
-          openssl pkcs12 -in "$CERTS_DIR/SelfSigned.p12" -passin pass: -nokeys -legacy -out /tmp/cert.pem 2>/dev/null
-          openssl pkcs12 -in "$CERTS_DIR/SelfSigned.p12" -passin pass: -nocerts -legacy -out /tmp/key.pem 2>/dev/null
+          openssl pkcs12 -in "$CERTS_DIR/SelfSigned.p12" -passin pass: -nokeys -out /tmp/cert.pem
+          openssl pkcs12 -in "$CERTS_DIR/SelfSigned.p12" -passin pass: -nocerts -out /tmp/key.pem
           for profile in "$PROFILES_DIR"/*.mobileprovision; do
             name=$(basename "$profile" .mobileprovision)
             tmp_plist=$(mktemp)
@@ -76,7 +76,7 @@ jobs:
             fi
             if ! plutil -extract Platform raw "$tmp_plist" 2>/dev/null; then
               plutil -insert Platform -string "$PLATFORM" "$tmp_plist"
-              openssl smime -sign -in "$tmp_plist" -outform DER -out "$profile" -signer /tmp/cert.pem -inkey /tmp/key.pem -nodetach 2>/dev/null
+              openssl smime -sign -in "$tmp_plist" -outform DER -out "$profile" -signer /tmp/cert.pem -inkey /tmp/key.pem -nodetach
               echo "Fixed $name -> Platform=$PLATFORM"
             else
               echo "$name already has Platform key"
