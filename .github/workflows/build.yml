@@ -44,11 +44,24 @@ jobs:
           cp -R "$GITHUB_WORKSPACE" /Users/Shared/
           mv /Users/Shared/$(basename "$GITHUB_WORKSPACE") /Users/Shared/telegram-ios
 
-      - name: Fix provisioning profiles
+      - name: Build
         run: |
+          set -x
           SOURCE_DIR=/Users/Shared/telegram-ios
-          PROFILES_DIR="$SOURCE_DIR/build-system/fake-codesigning/profiles"
-          KEYCHAIN="temp.keychain"
+          BAZEL_USER_ROOT="/private/var/tmp/_bazel_runner"
+          cd "$SOURCE_DIR"
+
+          export BUILD_NUMBER="${{ github.run_number }}"
+          export APP_VERSION=$(cat versions.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print(obj["app"]);')
+          export XCODE_VERSION_OVERRIDE="26.2.0"
+
+          # Step 1: Import certificates into keychain
+          python3 build-system/Make/ImportCertificates.py --path build-system/fake-codesigning/certs
+
+          # Step 2: Fix provisioning profiles - add missing Platform key
+          IDENTITY=$(security find-identity -v -p codesigning temp.keychain 2>/dev/null | head -1 | awk -F'"' '{print $2}')
+          echo "Using identity: $IDENTITY"
+          PROFILES_DIR="build-system/fake-codesigning/profiles"
           for profile in "$PROFILES_DIR"/*.mobileprovision; do
             name=$(basename "$profile" .mobileprovision)
             tmp_plist=$(mktemp)
@@ -60,22 +73,15 @@ jobs:
             fi
             if ! plutil -extract Platform raw "$tmp_plist" 2>/dev/null; then
               plutil -insert Platform -string "$PLATFORM" "$tmp_plist"
+              security cms -S -k temp.keychain -N "$IDENTITY" -i "$tmp_plist" -o "$profile"
+              echo "Fixed $name -> Platform=$PLATFORM"
+            else
+              echo "$name already has Platform key"
             fi
-            security cms -S -k "$KEYCHAIN" -N "Telegram" -i "$tmp_plist" -o "$profile"
             rm "$tmp_plist"
-            echo "Fixed $name -> Platform=$PLATFORM"
           done
 
-      - name: Build
-        run: |
-          set -x
-          SOURCE_DIR=/Users/Shared/telegram-ios
-          BAZEL_USER_ROOT="/private/var/tmp/_bazel_runner"
-          cd "$SOURCE_DIR"
-          export BUILD_NUMBER="${{ github.run_number }}"
-          export APP_VERSION=$(cat versions.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print(obj["app"]);')
-          export XCODE_VERSION_OVERRIDE="26.2.0"
-          python3 build-system/Make/ImportCertificates.py --path build-system/fake-codesigning/certs
+          # Step 3: Build
           python3 -u build-system/Make/Make.py \
             --bazelUserRoot="$BAZEL_USER_ROOT" \
             build \
@@ -133,3 +139,4 @@ jobs:
           path: /Users/Shared/telegram-ios/build/artifacts/nameless.DSYMs.zip
           retention-days: 7
           if-no-files-found: ignore
+
