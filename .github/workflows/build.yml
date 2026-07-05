@@ -22,10 +22,11 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Select Xcode 26.2
+      - name: Select latest Xcode
         run: |
-          ls /Applications/ | grep Xcode
-          sudo xcode-select -s /Applications/Xcode_26.2.app/Contents/Developer
+          XCODE_PATH=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+          echo "Using Xcode: $XCODE_PATH"
+          sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
           xcodebuild -version
 
       - name: Cache Bazel
@@ -34,7 +35,7 @@ jobs:
           path: |
             /private/var/tmp/_bazel_runner
             ~/.cache/bazel
-          key: bazel-${{ runner.os }}-${{ hashFiles('MODULE.bazel.lock', 'versions.json') }}-v1
+          key: bazel-${{ runner.os }}-${{ hashFiles('MODULE.bazel.lock', 'versions.json') }}-v2
           restore-keys: |
             bazel-${{ runner.os }}-
 
@@ -54,7 +55,7 @@ jobs:
 
           export BUILD_NUMBER="${{ github.run_number }}"
           export APP_VERSION=$(cat versions.json | python3 -c 'import json,sys;obj=json.load(sys.stdin);print(obj["app"]);')
-          export XCODE_VERSION_OVERRIDE="26.2.0"
+          export XCODE_VERSION_OVERRIDE="26.3.0"
 
           # Step 1: Import certificates into keychain
           python3 build-system/Make/ImportCertificates.py --path build-system/fake-codesigning/certs
