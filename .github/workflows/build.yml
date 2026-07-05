@@ -67,7 +67,7 @@ jobs:
           rm -f /tmp/cert.pem /tmp/key.pem
 
           # Step 3: Clean Bazel cache and build
-          rm -rf /private/var/tmp/_bazel_runner/*
+          rm -rf /private/var/tmp/_bazel_runner 2>/dev/null || true
           # Step 4: Build
           python3 -u build-system/Make/Make.py \
             --bazelUserRoot="$BAZEL_USER_ROOT" \
