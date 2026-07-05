@@ -22,12 +22,10 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Select latest Xcode
+      - name: Select Xcode 26.2
         run: |
           ls /Applications/ | grep Xcode
-          XCODE_PATH=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
-          echo "Using Xcode: $XCODE_PATH"
-          sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+          sudo xcode-select -s /Applications/Xcode_26.2.app/Contents/Developer
           xcodebuild -version
 
       - name: Cache Bazel
