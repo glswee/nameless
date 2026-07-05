@@ -1,41 +1,25 @@
 #!/usr/bin/env python3
-"""Fix provisioning profiles: add missing keys, re-sign with security cms -S."""
+"""Fix provisioning profiles and debug date handling."""
 import plistlib
 import subprocess
 import uuid
 import os
-import sys
+import datetime
 
-script_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(script_dir)
-PROFILES_DIR = os.path.join(parent_dir, 'fake-codesigning', 'profiles')
+CERTS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+                          'fake-codesigning', 'certs')
+PROFILES_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+                            'fake-codesigning', 'profiles')
 
-# Find a valid signing identity
-r = subprocess.run(
-    ['security', 'find-identity', '-v', '-p', 'codesigning', 'temp.keychain'],
-    capture_output=True, text=True
-)
-identity = None
-for line in r.stdout.splitlines():
-    if '"' in line and 'identity' in line.lower():
-        identity = line.split('"')[1]
-        break
-
-if not identity:
-    r = subprocess.run(
-        ['security', 'find-identity', '-v', 'temp.keychain'],
-        capture_output=True, text=True
-    )
-    for line in r.stdout.splitlines():
-        if '"' in line and 'identity' in line.lower():
-            identity = line.split('"')[1]
-            break
-
-if not identity:
-    print('ERROR: No signing identity found in keychain')
-    sys.exit(1)
-
-print('Using identity: ' + identity)
+# Extract cert and key
+subprocess.run([
+    'openssl', 'pkcs12', '-in', os.path.join(CERTS_DIR, 'SelfSigned.p12'),
+    '-passin', 'pass:', '-nokeys', '-out', '/tmp/cert.pem'
+], capture_output=True, check=True)
+subprocess.run([
+    'openssl', 'pkcs12', '-in', os.path.join(CERTS_DIR, 'SelfSigned.p12'),
+    '-passin', 'pass:', '-nocerts', '-nodes', '-out', '/tmp/key.pem'
+], capture_output=True, check=True)
 
 for fname in sorted(os.listdir(PROFILES_DIR)):
     if not fname.endswith('.mobileprovision'):
@@ -58,21 +42,26 @@ for fname in sorted(os.listdir(PROFILES_DIR)):
     d.setdefault('UUID', str(uuid.uuid4()).upper())
     d.setdefault('Version', 1)
 
+    # DEBUG: Check date type
+    exp = d.get('ExpirationDate')
+    print(fname + ': ExpirationDate type=' + str(type(exp).__name__) + ' val=' + str(exp)[:30])
+
+    # Ensure ExpirationDate is a datetime (set far future if needed)
+    if not isinstance(exp, datetime.datetime):
+        d['ExpirationDate'] = datetime.datetime(2099, 12, 31, 23, 59, 59)
+
     tmp = '/tmp/_profile_tmp.plist'
     with open(tmp, 'wb') as f:
         plistlib.dump(d, f, fmt=plistlib.FMT_XML)
 
-    r2 = subprocess.run([
-        'security', 'cms', '-S', '-k', 'temp.keychain',
-        '-N', identity, '-i', tmp, '-o', path
-    ], capture_output=True, text=True)
+    subprocess.run([
+        'openssl', 'smime', '-sign', '-in', tmp, '-outform', 'DER',
+        '-out', path, '-signer', '/tmp/cert.pem',
+        '-inkey', '/tmp/key.pem', '-nodetach'
+    ], check=True, capture_output=True)
+    print('Fixed ' + fname + ' -> Platform=' + platform)
+    os.unlink(tmp)
 
-    if r2.returncode != 0:
-        print('SKIP ' + fname + ': cms -S failed: ' + r2.stderr[:100])
-    else:
-        print('Fixed ' + fname + ' -> Platform=' + platform)
-
-    if os.path.exists(tmp):
-        os.unlink(tmp)
-
+os.unlink('/tmp/cert.pem')
+os.unlink('/tmp/key.pem')
 print('Done.')
