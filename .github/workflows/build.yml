@@ -60,29 +60,41 @@ jobs:
           # Step 1: Import certificates into keychain
           python3 build-system/Make/ImportCertificates.py --path build-system/fake-codesigning/certs
 
-          # Step 2: Extract cert/key and fix provisioning profiles
+          # Step 2: Fix provisioning profiles with proper date handling
           CERTS_DIR="build-system/fake-codesigning/certs"
           PROFILES_DIR="build-system/fake-codesigning/profiles"
           openssl pkcs12 -in "$CERTS_DIR/SelfSigned.p12" -passin pass: -nokeys -out /tmp/cert.pem
           openssl pkcs12 -in "$CERTS_DIR/SelfSigned.p12" -passin pass: -nocerts -nodes -out /tmp/key.pem
-          for profile in "$PROFILES_DIR"/*.mobileprovision; do
-            name=$(basename "$profile" .mobileprovision)
-            tmp_plist=$(mktemp)
-            security cms -D -i "$profile" > "$tmp_plist"
-            if echo "$name" | grep -qi watch; then
-              PLATFORM="WATCH_OS"
-            else
-              PLATFORM="IOS"
-            fi
-            # Add all missing keys required by rules_apple provisioning_profile_tool
-            plutil -insert Platform -string "$PLATFORM" "$tmp_plist" 2>/dev/null || true
-            plutil -insert TimeToLive -integer 31536000 "$tmp_plist" 2>/dev/null || true
-            plutil -insert UUID -string "$(uuidgen)" "$tmp_plist" 2>/dev/null || true
-            plutil -insert Version -integer 1 "$tmp_plist" 2>/dev/null || true
-            openssl smime -sign -in "$tmp_plist" -outform DER -out "$profile" -signer /tmp/cert.pem -inkey /tmp/key.pem -nodetach
-            echo "Fixed $name -> Platform=$PLATFORM"
-            rm "$tmp_plist"
-          done
+          python3 -c "
+          import plistlib, subprocess, uuid, os
+          certs_dir = 'build-system/fake-codesigning/profiles'
+          for fname in sorted(os.listdir(certs_dir)):
+            if not fname.endswith('.mobileprovision'):
+              continue
+            path = os.path.join(certs_dir, fname)
+            # Decode profile
+            r = subprocess.run(['security', 'cms', '-D', '-i', path], capture_output=True)
+            d = plistlib.loads(r.stdout)
+            # Add missing keys preserving date types
+            if 'Watch' in fname or 'watch' in fname:
+              d['Platform'] = 'WATCH_OS'
+            else:
+              d['Platform'] = 'IOS'
+            d.setdefault('TimeToLive', 31536000)
+            d.setdefault('UUID', str(uuid.uuid4()).upper())
+            d.setdefault('Version', 1)
+            # Write modified plist and re-sign
+            tmp = '/tmp/_profile_tmp.plist'
+            with open(tmp, 'wb') as f:
+              plistlib.dump(d, f, fmt=plistlib.FMT_XML)
+            subprocess.run([
+              'openssl', 'smime', '-sign', '-in', tmp, '-outform', 'DER',
+              '-out', path, '-signer', '/tmp/cert.pem',
+              '-inkey', '/tmp/key.pem', '-nodetach'
+            ], check=True, capture_output=True)
+            print(f'Fixed {fname} -> Platform={d["Platform"]}')
+            os.unlink(tmp)
+          "
           rm -f /tmp/cert.pem /tmp/key.pem
 
           # Step 3: Build
