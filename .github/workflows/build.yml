@@ -35,7 +35,7 @@ jobs:
           path: |
             /private/var/tmp/_bazel_runner
             ~/.cache/bazel
-          key: bazel-${{ runner.os }}-${{ hashFiles('MODULE.bazel.lock', 'versions.json') }}-v4
+          key: bazel-${{ runner.os }}-${{ hashFiles('MODULE.bazel.lock', 'versions.json') }}-v5
           restore-keys: |
             bazel-${{ runner.os }}-
 
