@@ -92,12 +92,32 @@ jobs:
           OUTPUT_PATH="build/artifacts"
           rm -rf "$OUTPUT_PATH"
           mkdir -p "$OUTPUT_PATH"
+          # Try bazel-out symlink structure first
           for f in bazel-out/applebin_ios-ios_arm*-opt-ST-*/bin/Telegram/*.ipa; do
             if [ -f "$f" ]; then
               cp "$f" "$OUTPUT_PATH/nameless.ipa"
               echo "Found IPA: $f"
+              break
             fi
           done
+          # Also try bazel-bin
+          if [ ! -f "$OUTPUT_PATH/nameless.ipa" ]; then
+            for f in bazel-bin/Telegram/*.ipa; do
+              if [ -f "$f" ]; then
+                cp "$f" "$OUTPUT_PATH/nameless.ipa"
+                echo "Found IPA: $f"
+                break
+              fi
+            done
+          fi
+          # Try find as last resort
+          if [ ! -f "$OUTPUT_PATH/nameless.ipa" ]; then
+            FOUND_IPA=$(find bazel-out -name '*.ipa' -type f 2>/dev/null | head -1)
+            if [ -n "$FOUND_IPA" ]; then
+              cp "$FOUND_IPA" "$OUTPUT_PATH/nameless.ipa"
+              echo "Found IPA via find: $FOUND_IPA"
+            fi
+          fi
           mkdir -p build/DSYMs
           for f in bazel-out/applebin_ios-ios_arm*-opt-ST-*/bin/Telegram/*.dSYM bazel-out/applebin_ios-ios_arm*-opt-ST-*/bin/Telegram/SwiftgramWatchApp_dsyms/*.dSYM; do
             if [ -d "$f" ]; then
